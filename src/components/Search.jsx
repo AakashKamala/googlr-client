@@ -9,22 +9,24 @@ const Search = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [time, setTime] = useState("");
 
-    function callApiEvery3Seconds() {
-        setInterval(async () => {
-            try {
-                const response = await fetch('https://googlr-server.onrender.com/alive');
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
+    useEffect(() => {
+        const callApiEvery3Seconds = () => {
+            setInterval(async () => {
+                try {
+                    const response = await fetch('https://googlr-server.onrender.com/alive');
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    setTime(data);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
                 }
-                const data = await response.json();
-                console.log('API response:', data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }, 3000);
-    }
-    
-    callApiEvery3Seconds();
+            }, 60000); 
+            return () => clearInterval(intervalId);
+        };
+        callApiEvery3Seconds();
+    }, []);
 
     useEffect(() => {
         const links = document.querySelectorAll('a');
@@ -57,6 +59,7 @@ const Search = () => {
     return (
         <div className="search-container">
             <h1 className="search-title">Where knowledge begins</h1>
+            {/* <h2>{time}</h2> */}
             <form onSubmit={handleSearch} className="search-form">
                 <input
                     name="q"
